@@ -1,12 +1,11 @@
 import { NextResponse } from 'next/server'
-import { stripe } from '@/lib/stripe'
 import { createClient } from '@/lib/supabase/server'
 
 export const dynamic = 'force-dynamic'
 
 export async function POST(req: Request) {
     try {
-        const { items, paymentMethod = 'stripe', codDetails } = await req.json()
+        const { items, paymentMethod = 'upi', codDetails } = await req.json()
         const origin = req.headers.get('origin') || process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
 
         if (!items || items.length === 0) {
@@ -15,7 +14,6 @@ export async function POST(req: Request) {
 
         // Attempt to get the logged-in user (optional for guest checkout)
         const supabase = await createClient()
-
         let { data: { user } } = await supabase.auth.getUser()
 
         const supabaseAdmin = await createClient({ admin: true })
@@ -39,29 +37,16 @@ export async function POST(req: Request) {
         }
 
         let totalAmount = 0;
-
-        // Format line items for Stripe (if applicable)
-        const lineItems = items.map((item: any) => {
+        items.forEach((item: any) => {
             totalAmount += item.price * item.quantity;
-            return {
-                price_data: {
-                    currency: 'inr',
-                    product_data: {
-                        name: item.name,
-                        images: item.image_url ? [item.image_url] : [],
-                    },
-                    unit_amount: item.price, // Already in cents
-                },
-                quantity: item.quantity,
-            }
-        })
+        });
 
         // Create the pending order in Supabase using Admin client to bypass RLS for guests
         const { data: order, error: orderError } = await supabaseAdmin
             .from('orders')
             .insert({
                 user_id: user.id,
-                stripe_session_id: paymentMethod === 'stripe' ? 'pending_stripe' : `cod_${Date.now()}`,
+                stripe_session_id: paymentMethod === 'upi' ? `upi_${Date.now()}` : `cod_${Date.now()}`,
                 total_amount: totalAmount,
                 status: paymentMethod === 'cod' ? 'processing' : 'pending',
                 ...(paymentMethod === 'cod' && codDetails ? { shipping_details: codDetails } : {})
@@ -91,29 +76,12 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: 'Failed to insert order items' }, { status: 500 })
         }
 
-        if (paymentMethod === 'cod' || paymentMethod === 'upi') {
-            return NextResponse.json({ 
-                url: `${origin}/cart/success?order_id=${order.id}`, 
-                orderId: order.id 
-            })
-        }
-
-        // Create Stripe Checkout Session (if paymentMethod is stripe)
-        const session = await stripe.checkout.sessions.create({
-            payment_method_types: ['card'],
-            line_items: lineItems,
-            mode: 'payment',
-            success_url: `${origin}/cart/success?session_id={CHECKOUT_SESSION_ID}`,
-            cancel_url: `${origin}/cart`,
-            metadata: {
-                userId: user.id,
-            },
+        // Return the success URL for both UPI and COD
+        return NextResponse.json({ 
+            url: `${origin}/cart/success?order_id=${order.id}`, 
+            orderId: order.id 
         })
-
-        // Update the order with the actual stripe session ID
-        await supabaseAdmin.from('orders').update({ stripe_session_id: session.id }).eq('id', order.id)
-
-        return NextResponse.json({ url: session.url, orderId: order.id })
+        
     } catch (error: any) {
         console.error('Checkout error:', error)
         return NextResponse.json({ error: error.message }, { status: 500 })

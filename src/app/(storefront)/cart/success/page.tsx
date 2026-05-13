@@ -12,7 +12,7 @@ export default function SuccessPage() {
     const sessionId = searchParams.get('session_id')
 
     useEffect(() => {
-        // Clear the cart securely when landing on the success page, regardless of Stripe or COD
+        // Clear the cart securely when landing on the success page
         clearCart()
     }, [clearCart])
 

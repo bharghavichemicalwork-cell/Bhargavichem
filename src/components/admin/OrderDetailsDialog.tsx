@@ -72,7 +72,7 @@ export default function OrderDetailsDialog({ order }: { order: any }) {
                                         <div className="flex justify-between items-center">
                                             <span className="text-sm text-gray-500">Method</span>
                                             <span className="text-sm font-semibold text-gray-900 uppercase">
-                                                {order.stripe_session_id ? 'Stripe Card' : 'Cash on Delivery'}
+                                                {order.stripe_session_id?.startsWith('upi_') ? 'UPI Payment' : (order.stripe_session_id?.startsWith('cod_') ? 'Cash on Delivery' : 'Digital Payment')}
                                             </span>
                                         </div>
                                         <div className="flex justify-between items-center">

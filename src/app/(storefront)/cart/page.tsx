@@ -20,7 +20,7 @@ export default function CartPage() {
     const [pendingOrderId, setPendingOrderId] = useState<string | null>(null)
     const router = useRouter()
 
-    const handleCheckout = async (paymentMethod: 'stripe' | 'cod' | 'upi') => {
+    const handleCheckout = async (paymentMethod: 'cod' | 'upi') => {
         try {
             setIsCheckingOut(true)
             const res = await fetch('/api/checkout', {

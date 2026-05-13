@@ -34,7 +34,7 @@ export default async function AdminOrdersPage() {
                                 <tr key={order.id} className="hover:bg-gray-50 transition">
                                     <td className="px-6 py-4">
                                         <div className="text-xs font-mono text-gray-500">{order.id}</div>
-                                        <div className="mt-1 text-xs text-gray-400">Stripe: {order.stripe_session_id?.slice(0, 15)}...</div>
+                                        <div className="mt-1 text-xs text-gray-400">TXN: {order.stripe_session_id?.slice(0, 15)}...</div>
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap">
                                         {new Date(order.created_at).toLocaleDateString()}
