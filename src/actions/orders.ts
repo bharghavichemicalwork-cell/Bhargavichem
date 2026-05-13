@@ -5,15 +5,12 @@ import { revalidatePath } from 'next/cache'
 
 import { createClient as createSupabaseAdminClient } from '@supabase/supabase-js'
 
-function getAdminClient() {
-    return createSupabaseAdminClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        process.env.SUPABASE_SERVICE_ROLE_KEY!
-    )
+async function getAdminClient() {
+    return createClient({ admin: true })
 }
 
 export async function getAdminOrders() {
-    const supabaseAdmin = getAdminClient()
+    const supabaseAdmin = await getAdminClient()
 
     // Query orders along with the user's email if possible, and their order items
     const { data: orders, error } = await supabaseAdmin
@@ -38,7 +35,7 @@ export async function getAdminOrders() {
 }
 
 export async function updateOrderStatus(orderId: string, status: string) {
-    const supabaseAdmin = getAdminClient()
+    const supabaseAdmin = await getAdminClient()
 
     const { error } = await supabaseAdmin
         .from('orders')

@@ -2,8 +2,7 @@
 
 import { z } from 'zod'
 import { revalidatePath } from 'next/cache'
-import { createServerClient } from '@supabase/ssr'
-import { cookies } from 'next/headers'
+import { createClient } from '@/lib/supabase/server'
 
 const ProductSchema = z.object({
     name: z.string().min(1, 'Name is required'),
@@ -16,19 +15,7 @@ const ProductSchema = z.object({
 })
 
 async function getAdminSupabase() {
-    const cookieStore = await cookies()
-    return createServerClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        // We are using the Service Role Key here to bypass RLS for admin actions.
-        // In a real app, you would check auth.uid() against an admins table FIRST.
-        process.env.SUPABASE_SERVICE_ROLE_KEY!,
-        {
-            cookies: {
-                getAll() { return cookieStore.getAll() },
-                setAll() { },
-            },
-        }
-    )
+    return createClient({ admin: true })
 }
 
 export async function createProduct(prevState: any, formData: FormData) {

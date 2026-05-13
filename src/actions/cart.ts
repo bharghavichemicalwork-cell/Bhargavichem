@@ -2,8 +2,7 @@
 
 import { z } from 'zod'
 import { revalidatePath } from 'next/cache'
-import { createServerClient } from '@supabase/ssr'
-import { cookies } from 'next/headers'
+import { createClient } from '@/lib/supabase/server'
 
 // 1. Zod schema for strict validation
 const AddToCartSchema = z.object({
@@ -28,27 +27,7 @@ export async function addToDBCart(prevState: any, formData: FormData) {
     const { productId, quantity } = validatedFields.data
 
     // Initialize Supabase Server client
-    const cookieStore = await cookies()
-    const supabase = createServerClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-        {
-            cookies: {
-                getAll() {
-                    return cookieStore.getAll()
-                },
-                setAll(cookiesToSet) {
-                    try {
-                        cookiesToSet.forEach(({ name, value, options }) =>
-                            cookieStore.set(name, value, options)
-                        )
-                    } catch {
-                        // Ignored in server action
-                    }
-                },
-            },
-        }
-    )
+    const supabase = await createClient()
 
     try {
         const { data: { user } } = await supabase.auth.getUser()

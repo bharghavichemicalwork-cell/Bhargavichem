@@ -1,8 +1,6 @@
 import { NextResponse } from 'next/server'
 import { stripe } from '@/lib/stripe'
-import { createServerClient } from '@supabase/ssr'
-import { createClient as createSupabaseAdminClient } from '@supabase/supabase-js'
-import { cookies } from 'next/headers'
+import { createClient } from '@/lib/supabase/server'
 
 export const dynamic = 'force-dynamic'
 
@@ -16,26 +14,11 @@ export async function POST(req: Request) {
         }
 
         // Attempt to get the logged-in user (optional for guest checkout)
-        const cookieStore = await cookies()
-        const supabase = createServerClient(
-            process.env.NEXT_PUBLIC_SUPABASE_URL!,
-            process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-            {
-                cookies: {
-                    getAll() {
-                        return cookieStore.getAll()
-                    },
-                    setAll() { },
-                },
-            }
-        )
+        const supabase = await createClient()
 
         let { data: { user } } = await supabase.auth.getUser()
 
-        const supabaseAdmin = createSupabaseAdminClient(
-            process.env.NEXT_PUBLIC_SUPABASE_URL!,
-            process.env.SUPABASE_SERVICE_ROLE_KEY!
-        )
+        const supabaseAdmin = await createClient({ admin: true })
 
         // If no user is found, silently create a background guest user to satisfy the database Foreign Key
         if (!user) {
