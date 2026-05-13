@@ -1,0 +1,51 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: var(--font-outfit), ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+
+  /* Brand: crisp "clean" cyan/blue */
+  --color-brand-50: #ecfeff;
+  --color-brand-100: #cffafe;
+  --color-brand-200: #a5f3fc;
+  --color-brand-300: #67e8f9;
+  --color-brand-400: #22d3ee;
+  --color-brand-500: #06b6d4;
+  --color-brand-600: #0891b2;
+  --color-brand-700: #0e7490;
+  --color-brand-800: #155e75;
+  --color-brand-900: #164e63;
+  --color-brand-950: #083344;
+
+  /* Neutral: cool, clinical "ice" background */
+  --color-sage-50: #f8fafc;
+  --color-sage-100: #f1f5f9;
+  --color-sage-200: #e2e8f0;
+  --color-sage-800: #0f172a;
+
+  /* Accent: fresh mint (used as secondary highlight) */
+  --color-gold-400: #5eead4;
+  --color-gold-500: #2dd4bf;
+}
+
+@layer base {
+  body {
+    @apply bg-sage-50 text-slate-900 selection:bg-brand-200 selection:text-brand-900;
+  }
+}
+
+@layer utilities {
+  .glass {
+    @apply backdrop-blur-xl bg-white/70;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.04);
+  }
+
+  .glass-card {
+    @apply bg-white rounded-3xl transition-all duration-300;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+  }
+
+  .glass-card:hover {
+    @apply -translate-y-1;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+  }
+}
