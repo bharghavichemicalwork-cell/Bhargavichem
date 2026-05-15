@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { createPortal } from 'react-dom'
 import Link from 'next/link'
 import Image from 'next/image'
-import { Menu, X, Home, ShoppingBag, Info, Phone, Users, User, Search } from 'lucide-react'
+import { Menu, X, Home, ShoppingBag, Search } from 'lucide-react'
 
 export default function MobileNav() {
     const [isOpen, setIsOpen] = useState(false)
@@ -75,30 +75,6 @@ export default function MobileNav() {
                                     <Link href="/#products" onClick={() => setIsOpen(false)} className="flex items-center px-6 py-4 text-base font-medium text-gray-900 hover:bg-brand-50 hover:text-brand-700 transition-colors">
                                         <ShoppingBag className="w-5 h-5 mr-4 text-gray-400" />
                                         Products
-                                    </Link>
-                                </li>
-                                <li>
-                                    <Link href="/" onClick={() => setIsOpen(false)} className="flex items-center px-6 py-4 text-base font-medium text-gray-900 hover:bg-brand-50 hover:text-brand-700 transition-colors">
-                                        <Info className="w-5 h-5 mr-4 text-gray-400" />
-                                        About Us
-                                    </Link>
-                                </li>
-                                <li>
-                                    <Link href="/" onClick={() => setIsOpen(false)} className="flex items-center px-6 py-4 text-base font-medium text-gray-900 hover:bg-brand-50 hover:text-brand-700 transition-colors">
-                                        <Users className="w-5 h-5 mr-4 text-gray-400" />
-                                        Become a Partner
-                                    </Link>
-                                </li>
-                                <li>
-                                    <Link href="/" onClick={() => setIsOpen(false)} className="flex items-center px-6 py-4 text-base font-medium text-gray-900 hover:bg-brand-50 hover:text-brand-700 transition-colors">
-                                        <Phone className="w-5 h-5 mr-4 text-gray-400" />
-                                        Contact Us
-                                    </Link>
-                                </li>
-                                <li className="pt-2 mt-2 border-t border-gray-100">
-                                    <Link href="/login" onClick={() => setIsOpen(false)} className="flex items-center px-6 py-4 text-base font-bold text-gray-900 hover:bg-brand-50 hover:text-brand-700 transition-colors">
-                                        <User className="w-5 h-5 mr-4 text-brand-600" />
-                                        Log in
                                     </Link>
                                 </li>
                             </ul>
