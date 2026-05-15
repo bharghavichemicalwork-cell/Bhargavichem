@@ -12,8 +12,8 @@ import { getGoogleDriveDirectLink } from '@/lib/utils'
 export default function CartPage() {
     const { items, removeItem, updateQuantity, totalAmount, clearCart } = useCartStore()
     const [isCheckingOut, setIsCheckingOut] = useState(false)
-    const [showCodForm, setShowCodForm] = useState(false)
-    const [codDetails, setCodDetails] = useState({ name: '', phone: '', address: '', city: '', postalCode: '' })
+    const [showShippingForm, setShowShippingForm] = useState(false)
+    const [shippingDetails, setShippingDetails] = useState({ name: '', phone: '', address: '', city: '', postalCode: '' })
     const [showQrModal, setShowQrModal] = useState(false)
     const [qrDataUrl, setQrDataUrl] = useState<string | null>(null)
     const [pendingRedirectUrl, setPendingRedirectUrl] = useState<string | null>(null)
@@ -26,7 +26,7 @@ export default function CartPage() {
             const res = await fetch('/api/checkout', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ items, paymentMethod, codDetails: paymentMethod === 'cod' ? codDetails : undefined }),
+                body: JSON.stringify({ items, paymentMethod, shippingDetails }),
             })
 
             const data = await res.json()
@@ -161,70 +161,62 @@ export default function CartPage() {
 
                         <div className="mt-8 space-y-3">
                             <button
-                                onClick={() => handleCheckout('upi')}
+                                onClick={() => setShowShippingForm(true)}
                                 disabled={isCheckingOut || items.length === 0}
                                 className="w-full bg-brand-600 text-white! hover:bg-brand-500 disabled:bg-sage-200 py-4 px-4 rounded-xl font-bold flex items-center justify-center transition-all duration-300 shadow-[0_4px_14px_0_rgba(22,163,74,0.39)] hover:shadow-[0_6px_20px_rgba(22,163,74,0.23)] hover:-translate-y-0.5 active:scale-[0.98] disabled:shadow-none disabled:hover:translate-y-0"
                             >
                                 {isCheckingOut ? (
                                     <>Processing... <Loader2 className="w-5 h-5 ml-2 animate-spin" /></>
                                 ) : (
-                                    <>Proceed to Payment <ArrowRight className="w-5 h-5 ml-2" /></>
+                                    <>Proceed to Checkout <ArrowRight className="w-5 h-5 ml-2" /></>
                                 )}
-                            </button>
-
-                            <button
-                                onClick={() => setShowCodForm(true)}
-                                disabled={isCheckingOut || items.length === 0}
-                                className="w-full bg-white text-brand-800 border-2 border-brand-200 hover:border-brand-500 hover:bg-brand-50 disabled:bg-sage-50 disabled:border-sage-100 disabled:text-sage-800/40 py-3.5 px-4 rounded-xl font-bold flex items-center justify-center transition-all duration-300"
-                            >
-                                Pay on Delivery
                             </button>
                         </div>
                     </div>
                 </div>
             </div>
 
-            {/* COD Modal Form */}
-            {showCodForm && (
+            {/* Shipping Modal Form */}
+            {showShippingForm && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 px-4">
                     <div className="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden">
                         <div className="px-6 py-5 border-b border-gray-200 flex justify-between items-center">
                             <h3 className="text-xl font-bold text-gray-900">Shipping Details</h3>
-                            <button onClick={() => setShowCodForm(false)} className="text-gray-400 hover:text-gray-600 text-2xl leading-none">&times;</button>
+                            <button onClick={() => setShowShippingForm(false)} className="text-gray-400 hover:text-gray-600 text-2xl leading-none">&times;</button>
                         </div>
                         <div className="p-6">
                             <form
                                 onSubmit={(e) => {
                                     e.preventDefault();
-                                    handleCheckout('cod')
+                                    handleCheckout('upi')
                                 }}
                                 className="space-y-4"
                             >
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
-                                    <input required type="text" className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-brand-500 focus:border-brand-500" value={codDetails.name} onChange={e => setCodDetails({ ...codDetails, name: e.target.value })} />
+                                    <input required type="text" className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-brand-500 focus:border-brand-500" value={shippingDetails.name} onChange={e => setShippingDetails({ ...shippingDetails, name: e.target.value })} />
                                 </div>
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
-                                    <input required type="tel" className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-brand-500 focus:border-brand-500" value={codDetails.phone} onChange={e => setCodDetails({ ...codDetails, phone: e.target.value })} />
+                                    <input required type="tel" className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-brand-500 focus:border-brand-500" value={shippingDetails.phone} onChange={e => setShippingDetails({ ...shippingDetails, phone: e.target.value })} />
                                 </div>
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-1">Full Address</label>
-                                    <textarea required rows={3} className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-brand-500 focus:border-brand-500" value={codDetails.address} onChange={e => setCodDetails({ ...codDetails, address: e.target.value })}></textarea>
+                                    <textarea required rows={3} className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-brand-500 focus:border-brand-500" value={shippingDetails.address} onChange={e => setShippingDetails({ ...shippingDetails, address: e.target.value })}></textarea>
                                 </div>
                                 <div className="grid grid-cols-2 gap-4">
                                     <div>
                                         <label className="block text-sm font-medium text-gray-700 mb-1">City</label>
-                                        <input required type="text" className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-brand-500 focus:border-brand-500" value={codDetails.city} onChange={e => setCodDetails({ ...codDetails, city: e.target.value })} />
+                                        <input required type="text" className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-brand-500 focus:border-brand-500" value={shippingDetails.city} onChange={e => setShippingDetails({ ...shippingDetails, city: e.target.value })} />
                                     </div>
                                     <div>
                                         <label className="block text-sm font-medium text-gray-700 mb-1">Postal Code</label>
-                                        <input required type="text" className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-brand-500 focus:border-brand-500" value={codDetails.postalCode} onChange={e => setCodDetails({ ...codDetails, postalCode: e.target.value })} />
+                                        <input required type="text" className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-brand-500 focus:border-brand-500" value={shippingDetails.postalCode} onChange={e => setShippingDetails({ ...shippingDetails, postalCode: e.target.value })} />
                                     </div>
                                 </div>
                                 <div className="mt-8">
                                     <button type="submit" disabled={isCheckingOut} className="w-full bg-brand-600 text-white! hover:bg-brand-500 py-4 rounded-xl font-bold transition-all duration-300 shadow-[0_4px_14px_0_rgba(22,163,74,0.39)] hover:shadow-[0_6px_20px_rgba(22,163,74,0.23)] hover:-translate-y-0.5 active:scale-[0.98] disabled:opacity-75 disabled:shadow-none disabled:hover:translate-y-0">
-                                        {isCheckingOut ? 'Processing...' : 'Confirm Order'}
+                                        {isCheckingOut ? 'Processing...' : 'Pay with UPI'}
                                     </button>
                                 </div>
                             </form>

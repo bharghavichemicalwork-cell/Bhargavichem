@@ -11,6 +11,10 @@ export const metadata: Metadata = {
   title: "BHARGHAVI CHEM MANUFACTURING",
   description:
     "BHARGHAVI CHEM MANUFACTURING — chemical manufacturing and supply of quality industrial chemicals.",
+  icons: {
+    icon: "/brand-logo.png",
+    apple: "/brand-logo.png",
+  },
 };
 
 export default function RootLayout({

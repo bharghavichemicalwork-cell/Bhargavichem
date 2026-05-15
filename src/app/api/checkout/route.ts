@@ -5,11 +5,15 @@ export const dynamic = 'force-dynamic'
 
 export async function POST(req: Request) {
     try {
-        const { items, paymentMethod = 'upi', codDetails } = await req.json()
+        const { items, paymentMethod = 'upi', shippingDetails } = await req.json()
         const origin = req.headers.get('origin') || process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
 
         if (!items || items.length === 0) {
             return NextResponse.json({ error: 'Cart is empty' }, { status: 400 })
+        }
+
+        if (!shippingDetails) {
+            return NextResponse.json({ error: 'Shipping details are required' }, { status: 400 })
         }
 
         // Attempt to get the logged-in user (optional for guest checkout)
@@ -46,10 +50,10 @@ export async function POST(req: Request) {
             .from('orders')
             .insert({
                 user_id: user.id,
-                stripe_session_id: paymentMethod === 'upi' ? `upi_${Date.now()}` : `cod_${Date.now()}`,
+                stripe_session_id: `upi_${Date.now()}`,
                 total_amount: totalAmount,
-                status: paymentMethod === 'cod' ? 'processing' : 'pending',
-                ...(paymentMethod === 'cod' && codDetails ? { shipping_details: codDetails } : {})
+                status: 'pending',
+                shipping_details: shippingDetails
             })
             .select()
             .single()

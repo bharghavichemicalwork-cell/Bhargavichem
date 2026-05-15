@@ -4,6 +4,7 @@ import Image from 'next/image'
 
 import CartIcon from '@/components/cart/CartIcon'
 import MobileNav from '@/components/layout/MobileNav'
+import WhatsAppButton from '@/components/layout/WhatsAppButton'
 
 export default function StorefrontLayout({ children }: { children: ReactNode }) {
     return (
@@ -47,6 +48,9 @@ export default function StorefrontLayout({ children }: { children: ReactNode }) 
                     <p className="text-sm mt-2 opacity-70">Manufacturing and supply of quality industrial chemicals.</p>
                 </div>
             </footer>
+
+            {/* Floating Elements */}
+            <WhatsAppButton />
         </div >
     )
 }
