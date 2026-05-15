@@ -32,8 +32,8 @@ export default function CartPage() {
             const data = await res.json()
             if (data.url && data.orderId && paymentMethod === 'upi') {
                 // Generate UPI intent URL: upi://pay?pa=VPA&pn=NAME&am=AMOUNT&cu=INR&tn=NOTE
-                const upiId = 'ssdchemicalslab984@oksbi'
-                const businessName = 'Bharghavi Chemicals'
+                const upiId = process.env.NEXT_PUBLIC_UPI_ID || 'laboratoryindia499@okicici'
+                const businessName = process.env.NEXT_PUBLIC_BUSINESS_NAME || 'Bhargavi Chemicals'
                 const amount = (totalAmount() / 100).toFixed(2)
                 const note = `Order ${data.orderId}`
                 
